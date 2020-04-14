@@ -1,0 +1,19 @@
+parameters:
+  tftpserver:
+    type: String
+    description: The TFTP server to backup to and retrieve configuration from.
+  backup_name:
+    type: String
+    description: The name for the config backup. This must be unique on the TFTP server.
+  fw_file:
+    type: String
+    description: The full name for the firmware file, including the file extension that is to be retrieved from the TFTP server.
+steps:
+  - task: cisco_ios::config_save
+    description: Saves running-config to startup-config
+  - task: cisco_ios::cli_command
+    parameters:
+      command: "copy startup-config tftp://${tftpserver}/${backup_name}"
+  - task: cisco_ios::cli_command
+    parameters:
+      command: "copy tftp://${tftpserver}/${fw_file} flash:"
