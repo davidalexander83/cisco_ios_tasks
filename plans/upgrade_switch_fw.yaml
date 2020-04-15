@@ -5,15 +5,25 @@ parameters:
   backup_name:
     type: String
     description: The name for the config backup. This must be unique on the TFTP server.
-  fw_file:
+  image_file:
     type: String
     description: The full name for the firmware file, including the file extension that is to be retrieved from the TFTP server.
 steps:
-  - task: cisco_ios::config_save
-    description: Saves running-config to startup-config
   - task: cisco_ios::cli_command
+    description: Exports startup-config to tftp as backup
     parameters:
       command: "copy startup-config tftp://${tftpserver}/${backup_name}"
   - task: cisco_ios::cli_command
+    description: Deletes the current IOS image
     parameters:
-      command: "copy tftp://${tftpserver}/${fw_file} flash:"
+      command: "delete bootflash:${image_file}\r"
+  - task: cisco_ios::cli_command
+    description: Copies the firmware update to the device
+    parameters:
+      command: "copy tftp://${tftpserver}/${image_file} bootflash:"
+  - task: cisco_ios::config_save
+    description: Save running-config to startup-config
+  - task: cisco_ios::cli_command
+    description: Reload router to commit IOS image
+      command: "reload\r"
+    
