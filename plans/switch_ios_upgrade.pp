@@ -16,5 +16,4 @@ plan cisco_ios_tasks::switch_ios_upgrade(
   run_task('cisco_ios::cli_command', $ciscotarget, command => 'reload\r', raw => true)
   notice('Reloaded switch')
   run_task('aruba::get_access_points', $arubatarget)
-  
 }
